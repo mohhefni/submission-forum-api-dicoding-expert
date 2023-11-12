@@ -1,5 +1,5 @@
-const AddedThread = require('../../Domains/thread/entities/AddedThread');
-const ThreadRepository = require('../../Domains/thread/ThreadRepository');
+const AddedThread = require('../../Domains/threads/entities/AddedThread');
+const ThreadRepository = require('../../Domains/threads/ThreadRepository');
 const InvariantError = require('../../Commons/exceptions/InvariantError');
 
 class ThreadRepositoryPostgres extends ThreadRepository {

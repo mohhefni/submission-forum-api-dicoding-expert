@@ -1,7 +1,7 @@
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const AddThread = require('../../../Domains/thread/entities/AddThread');
-const AddedThread = require('../../../Domains/thread/entities/AddedThread');
+const AddThread = require('../../../Domains/threads/entities/AddThread');
+const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const pool = require('../../../Infrastructures/database/postgres/pool');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 

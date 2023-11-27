@@ -1,11 +1,16 @@
 const ThreadRepository = require('../ThreadRepository');
 
 describe('ThreadRepository interface', () => {
-  it('hould throw error when invoke abstract behavior', () => {
+  it('should throw error when invoke abstract behavior', async () => {
     // Arrange
     const threadRepository = new ThreadRepository();
 
     // Action and Assert
-    expect(threadRepository.addThread).toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+    await expect(threadRepository.addThread({})).rejects.toThrowError(
+      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    );
+    await expect(threadRepository.checkAvailabilityThread('')).rejects.toThrowError(
+      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    );
   });
 });

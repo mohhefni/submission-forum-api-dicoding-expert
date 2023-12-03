@@ -14,7 +14,9 @@ describe('CommentRepositoryPostgres', () => {
     await ThreadsTableTestHelper.addThread({ id: threadId });
   });
 
-  afterEach(async () => {});
+  afterEach(async () => {
+    await CommentsTableTestHelper.cleanTable();
+  });
 
   afterAll(async () => {
     await ThreadsTableTestHelper.cleanTable();
@@ -38,8 +40,32 @@ describe('CommentRepositoryPostgres', () => {
       await commentRepositoryPostgres.addComment(addComment);
 
       // Assert
-      const comment = CommentsTableTestHelper.findCommentById('comment-123');
+      const comment = await CommentsTableTestHelper.findCommentById('comment-123');
       expect(comment).toHaveLength(1);
+    });
+
+    it('should return added thread correctly', async () => {
+      // Arrange
+      const addComment = new AddComment({
+        content: 'comment content',
+        thread: threadId,
+        owner: userId,
+      });
+
+      const fakeIdGenerator = () => '123';
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Action
+      const addedComment = await commentRepositoryPostgres.addComment(addComment);
+
+      // Assert
+      expect(addedComment).toStrictEqual(
+        new AddedComment({
+          id: 'comment-123',
+          content: 'comment content',
+          owner: userId,
+        }),
+      );
     });
   });
 });

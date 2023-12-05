@@ -5,7 +5,7 @@ const LoginTestHelper = require('../../../../tests/LoginTestHelper');
 const container = require('../../container');
 const createServer = require('../createServer');
 
-describe('/threads endpoint', () => {
+describe('add thread endpoint endpoint', () => {
   afterAll(async () => {
     await pool.end();
   });
@@ -39,32 +39,6 @@ describe('/threads endpoint', () => {
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(401);
       expect(responseJson.error).toEqual('Unauthorized');
-    });
-
-    it('should response 201 and persisted thread', async () => {
-      // Arrange
-      const requestPayload = {
-        title: 'thread title',
-        body: 'thread body',
-      };
-      const server = await createServer(container);
-      const accessToken = await LoginTestHelper.getAccessToken();
-
-      // Action
-      const response = await server.inject({
-        method: 'POST',
-        url: '/threads',
-        payload: requestPayload,
-        headers: {
-          authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      // Assert
-      const responseJson = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(201);
-      expect(responseJson.status).toEqual('success');
-      expect(responseJson.data.addedThread).toBeDefined();
     });
 
     it('should response 400 when request payload not contain needed property', async () => {
@@ -147,5 +121,31 @@ describe('/threads endpoint', () => {
       expect(responseJson.status).toEqual('error');
       expect(responseJson.message).toEqual('terjadi kegagalan pada server kami');
     });
+  });
+
+  it('should response 201 and persisted thread', async () => {
+    // Arrange
+    const requestPayload = {
+      title: 'thread title',
+      body: 'thread body',
+    };
+    const server = await createServer(container);
+    const accessToken = await LoginTestHelper.getAccessToken();
+
+    // Action
+    const response = await server.inject({
+      method: 'POST',
+      url: '/threads',
+      payload: requestPayload,
+      headers: {
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    // Assert
+    const responseJson = JSON.parse(response.payload);
+    expect(response.statusCode).toEqual(201);
+    expect(responseJson.status).toEqual('success');
+    expect(responseJson.data.addedThread).toBeDefined();
   });
 });

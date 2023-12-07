@@ -203,6 +203,7 @@ container.register([
       ],
     },
   },
+  // error
   {
     key: AddCommentUseCase.name,
     Class: AddCommentUseCase,

@@ -17,7 +17,7 @@ const BcryptPasswordHash = require('./security/BcryptPasswordHash');
 const ThreadRepositoryPostgres = require('./repository/ThreadRepositoryPostgres');
 const ThreadRepository = require('../Domains/threads/ThreadRepository');
 // comment
-const CommentRepositoryPostgres = require('../Infrastructures/repository/CommentRepositoryPostgres');
+const CommentRepositoryPostgres = require('./repository/CommentRepositoryPostgres');
 const CommentRepository = require('../Domains/comments/CommentRepository');
 
 // use case
@@ -203,7 +203,6 @@ container.register([
       ],
     },
   },
-  // error
   {
     key: AddCommentUseCase.name,
     Class: AddCommentUseCase,

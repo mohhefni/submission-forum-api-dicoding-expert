@@ -67,7 +67,7 @@ describe('ThreadRepositoryPostgres', () => {
   });
 
   describe('verifyThreadIsExist function', () => {
-    it('should return NotFoundError when comment not found', async () => {
+    it('should return NotFoundError when thread not found', async () => {
       // Arrange
       await ThreadsTableTestHelper.addThread({ id: 'thread-123' });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});

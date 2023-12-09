@@ -24,6 +24,11 @@ exports.up = (pgm) => {
       references: 'users',
       onDelete: 'cascade',
     },
+    is_delete: {
+      type: 'BOOLEAN',
+      notNull: true,
+      default: false,
+    },
     created_at: {
       type: 'TIMESTAMP',
       notNull: true,

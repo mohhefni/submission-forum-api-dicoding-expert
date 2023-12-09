@@ -181,4 +181,48 @@ describe('add comments endpoint', () => {
       expect(responseJson.data.addedComment).toBeDefined();
     });
   });
+
+  describe('when delete comment', () => {
+    it('should response 401 when no authentication', async () => {
+      // Arrange
+      const server = await createServer(container);
+      const accessToken = '';
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/threads/{threadId}/comments/{commentId}',
+        headers: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(401);
+      expect(responseJson.error).toEqual('Unauthorized');
+    });
+
+    it('should response 404 when comment not found', async () => {
+      // Arrange
+      const server = await createServer(container);
+      const accessToken = await LoginTestHelper.getAccessToken();
+      await ThreadsTableTestHelper.addThread({ id: threadId });
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/xxx`,
+        headers: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('comment tidak ditemukan');
+    });
+  });
 });

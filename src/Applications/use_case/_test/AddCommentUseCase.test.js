@@ -34,13 +34,13 @@ describe('AddCommentUseCase', () => {
       .mockImplementation(() => Promise.resolve(mockAddedComment));
 
     /** creating use case instance */
-    const getCommentUseCase = new AddCommentUseCase({
+    const addCommentUseCase = new AddCommentUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
     });
 
     // Action
-    const addedComment = await getCommentUseCase.execute(useCasePayload);
+    const addedComment = await addCommentUseCase.execute(useCasePayload);
 
     // Assert
     expect(addedComment).toStrictEqual(

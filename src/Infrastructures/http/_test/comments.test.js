@@ -9,6 +9,7 @@ const createServer = require('../createServer');
 describe('add comments endpoint', () => {
   const userId = 'user-123';
   const threadId = 'thread-123';
+  const commentId = 'comment-123';
   beforeAll(async () => {
     await UsersTableTestHelper.addUser({ id: userId });
   });
@@ -208,6 +209,7 @@ describe('add comments endpoint', () => {
       const server = await createServer(container);
       const accessToken = await LoginTestHelper.getAccessToken();
       await ThreadsTableTestHelper.addThread({ id: threadId });
+      await CommentsTableTestHelper.addComment({ id: threadId });
 
       // Action
       const response = await server.inject({
@@ -223,6 +225,28 @@ describe('add comments endpoint', () => {
       expect(response.statusCode).toEqual(404);
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual('comment tidak ditemukan');
+    });
+
+    it('should response 200 and delete comment successfully', async () => {
+      // Arrange
+      const server = await createServer(container);
+      const accessToken = await LoginTestHelper.getAccessToken();
+      await ThreadsTableTestHelper.addThread({ id: threadId });
+      await CommentsTableTestHelper.addComment({ id: commentId });
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
     });
   });
 });

@@ -22,7 +22,7 @@ describe('A ThreadDetail entities', () => {
       id: 'thread-123',
       title: 'sebuah thread',
       body: 'sebuah body thread',
-      date: 'date',
+      date: new Date(),
       username: 'username',
       comments: true,
     };
@@ -39,7 +39,7 @@ describe('A ThreadDetail entities', () => {
       id: 'thread-123',
       title: 'sebuah thread',
       body: 'sebuah body thread',
-      date: 'date',
+      date: new Date(),
       username: 'username',
       comments: [],
     };

@@ -18,5 +18,8 @@ describe('CommentRepository interfaces', () => {
     await expect(commentRepository.deleteCommentById({})).rejects.toThrowError(
       'COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED',
     );
+    await expect(commentRepository.getCommentsThread({})).rejects.toThrowError(
+      'COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    );
   });
 });

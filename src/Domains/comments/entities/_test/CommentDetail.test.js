@@ -6,7 +6,7 @@ describe('A CommentDetail entities', () => {
     const payload = {
       id: 'comment-123',
       username: 'user-123',
-      date: '2021-08-08T07:22:33.555Z',
+      date: new Date(),
     };
 
     // Action and Assert
@@ -20,8 +20,9 @@ describe('A CommentDetail entities', () => {
     const payload = {
       id: 'comment-123',
       username: 'user-123',
-      date: '2021-08-08T07:22:33.555Z',
+      date: new Date(),
       content: true,
+      is_delete: true,
     };
 
     // Action and Assert
@@ -35,8 +36,9 @@ describe('A CommentDetail entities', () => {
     const payload = {
       id: 'comment-123',
       username: 'user-123',
-      date: '2021-08-08T07:22:33.555Z',
+      date: new Date(),
       content: 'sebuah comment',
+      is_delete: true,
     };
 
     // Action
@@ -46,6 +48,6 @@ describe('A CommentDetail entities', () => {
     expect(id).toEqual(payload.id);
     expect(username).toEqual(payload.username);
     expect(date).toEqual(payload.date);
-    expect(content).toEqual(payload.content);
+    expect(content).toEqual('**komentar telah dihapus**');
   });
 });

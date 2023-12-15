@@ -2,14 +2,16 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
 const AddedThread = require('../../../Domains/threads/entities/AddedThread');
+const ThreadDetail = require('../../../Domains/threads/entities/ThreadDetail');
 const pool = require('../../../Infrastructures/database/postgres/pool');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 
 describe('ThreadRepositoryPostgres', () => {
   const userId = 'user-123';
+  const username = 'hefni';
   beforeAll(async () => {
-    await UsersTableTestHelper.addUser({ id: userId });
+    await UsersTableTestHelper.addUser({ id: userId, username: username });
   });
 
   afterEach(async () => {
@@ -95,6 +97,37 @@ describe('ThreadRepositoryPostgres', () => {
       await expect(
         threadRepositoryPostgres.verifyThreadIsExist('thread-123'),
       ).resolves.not.toThrowError(NotFoundError);
+    });
+
+    describe('getThreadById funnction', () => {
+      it('should return detail thread correctly', async () => {
+        // Arrange
+        const addThread = new AddThread({
+          title: 'thread title',
+          body: 'thread body',
+          owner: 'user-123',
+        });
+
+        const fakeIdGenerator = () => '123';
+        const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+        await threadRepositoryPostgres.addThread(addThread);
+        const [findThread] = await ThreadsTableTestHelper.findThreadById('thread-123');
+
+        // Action
+        const thread = await threadRepositoryPostgres.getThreadById('thread-123');
+
+        // Assert
+        expect(thread).toStrictEqual(
+          new ThreadDetail({
+            id: findThread.id,
+            title: findThread.title,
+            body: findThread.body,
+            date: findThread.created_at,
+            username: username,
+            comments: [],
+          }),
+        );
+      });
     });
   });
 });

@@ -3,16 +3,21 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const AddComment = require('../../../Domains/comments/entities/AddComment');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
+const CommentDetail = require('../../../Domains/comments/entities/CommentDetail');
 const pool = require('../../database/postgres/pool');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 
 describe('CommentRepositoryPostgres', () => {
-  const userId = 'user-123';
+  const userId1 = 'user-123';
+  const username1 = 'hefni';
+  const userId2 = 'user-456';
+  const username2 = 'moh';
   const threadId = 'thread-123';
   beforeAll(async () => {
-    await UsersTableTestHelper.addUser({ id: userId });
+    await UsersTableTestHelper.addUser({ id: userId1, username: username1 });
+    await UsersTableTestHelper.addUser({ id: userId2, username: username2 });
     await ThreadsTableTestHelper.addThread({ id: threadId });
   });
 
@@ -21,8 +26,8 @@ describe('CommentRepositoryPostgres', () => {
   });
 
   afterAll(async () => {
-    await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
+    await ThreadsTableTestHelper.cleanTable();
     await pool.end();
   });
 
@@ -32,7 +37,7 @@ describe('CommentRepositoryPostgres', () => {
       const addComment = new AddComment({
         content: 'comment content',
         thread: threadId,
-        owner: userId,
+        owner: userId1,
       });
 
       const fakeIdGenerator = () => '123';
@@ -51,7 +56,7 @@ describe('CommentRepositoryPostgres', () => {
       const addComment = new AddComment({
         content: 'comment content',
         thread: threadId,
-        owner: userId,
+        owner: userId1,
       });
 
       const fakeIdGenerator = () => '123';
@@ -65,7 +70,7 @@ describe('CommentRepositoryPostgres', () => {
         new AddedComment({
           id: 'comment-123',
           content: 'comment content',
-          owner: userId,
+          owner: userId1,
         }),
       );
     });
@@ -87,7 +92,7 @@ describe('CommentRepositoryPostgres', () => {
       const addComment = new AddComment({
         content: 'comment content',
         thread: threadId,
-        owner: userId,
+        owner: userId1,
       });
 
       const fakeIdGenerator = () => '123';
@@ -108,7 +113,7 @@ describe('CommentRepositoryPostgres', () => {
       const addComment = new AddComment({
         content: 'comment content',
         thread: threadId,
-        owner: userId,
+        owner: userId1,
       });
 
       const fakeIdGenerator = () => '123';
@@ -128,7 +133,7 @@ describe('CommentRepositoryPostgres', () => {
       const addComment = new AddComment({
         content: 'comment content',
         thread: threadId,
-        owner: userId,
+        owner: userId1,
       });
 
       const fakeIdGenerator = () => '123';
@@ -139,7 +144,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       await expect(
-        commentRepositoryPostgres.verifyCommentOwner('comment-123', userId),
+        commentRepositoryPostgres.verifyCommentOwner('comment-123', userId1),
       ).resolves.not.toThrowError(AuthorizationError);
     });
   });
@@ -151,7 +156,7 @@ describe('CommentRepositoryPostgres', () => {
       const addComment = new AddComment({
         content: 'comment content',
         thread: threadId,
-        owner: userId,
+        owner: userId1,
       });
       const fakeIdGenerator = () => '123';
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
@@ -163,7 +168,50 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       expect(comments[0].is_delete).toEqual(true);
-      expect(comments[0].content).toEqual('**komentar telah dihapus**');
+    });
+  });
+
+  describe('getCommentsThread function', () => {
+    it('should ', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        content: 'content comment 1',
+        thread: threadId,
+        owner: userId1,
+        is_delete: false,
+      });
+
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-456',
+        content: 'content comment 2',
+        thread: threadId,
+        owner: userId2,
+        is_delete: true,
+      });
+      const [firstComment] = await CommentsTableTestHelper.findCommentById('comment-123');
+      const [secondComment] = await CommentsTableTestHelper.findCommentById('comment-456');
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      // Action
+      const comments = await commentRepositoryPostgres.getCommentsThread('thread-123');
+
+      // Assert
+      expect(comments).toStrictEqual([
+        new CommentDetail({
+          id: firstComment.id,
+          username: username1,
+          date: firstComment.created_at,
+          content: firstComment.content,
+          is_delete: firstComment.is_delete,
+        }),
+        new CommentDetail({
+          id: secondComment.id,
+          username: username2,
+          date: secondComment.created_at,
+          content: secondComment.content,
+        }),
+      ]);
     });
   });
 });

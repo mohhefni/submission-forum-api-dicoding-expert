@@ -1,4 +1,4 @@
-class DetailComment {
+class ThreadDetail {
   constructor(payload) {
     this._verifyPayload(payload);
     const { id, title, body, date, username, comments } = payload;
@@ -28,4 +28,4 @@ class DetailComment {
   }
 }
 
-module.exports = DetailComment;
+module.exports = ThreadDetail;

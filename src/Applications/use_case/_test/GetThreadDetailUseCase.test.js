@@ -63,32 +63,14 @@ describe('GetThreadDetailUseCase', () => {
     const detailThread = await getThreadUseCase.execute(useCasePayload);
 
     //  Assert
+    expect(mockThreadRepository.verifyThreadIsExist).toHaveBeenCalledWith(useCasePayload.thread);
     expect(mockThreadRepository.getThreadById).toHaveBeenCalledWith(useCasePayload.thread);
     expect(mockCommentRepository.getCommentsThread).toHaveBeenCalledWith(useCasePayload.thread);
-    expect(detailThread).toStrictEqual({
-      thread: {
-        id: 'thread-123',
-        title: 'sebuah thread',
-        body: 'sebuah body thread',
-        date: new Date(),
-        username: 'username',
-        comments: [
-          {
-            id: 'comment-123',
-            username: 'user-123',
-            date: new Date(),
-            content: 'sebuah comment',
-            is_delete: true,
-          },
-          {
-            id: 'comment-456',
-            username: 'user-123',
-            date: new Date(),
-            content: 'sebuah comment',
-            is_delete: false,
-          },
-        ],
-      },
-    });
+    expect(detailThread).toStrictEqual(
+      new ThreadDetail({
+        ...threadData,
+        comments: commentData,
+      }),
+    );
   });
 });

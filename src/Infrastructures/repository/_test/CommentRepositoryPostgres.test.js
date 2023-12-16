@@ -15,7 +15,7 @@ describe('CommentRepositoryPostgres', () => {
   const userId2 = 'user-456';
   const username2 = 'moh';
   const threadId = 'thread-123';
-  beforeAll(async () => {
+  beforeEach(async () => {
     await UsersTableTestHelper.addUser({ id: userId1, username: username1 });
     await UsersTableTestHelper.addUser({ id: userId2, username: username2 });
     await ThreadsTableTestHelper.addThread({ id: threadId });
@@ -23,11 +23,11 @@ describe('CommentRepositoryPostgres', () => {
 
   afterEach(async () => {
     await CommentsTableTestHelper.cleanTable();
+    await ThreadsTableTestHelper.cleanTable();
+    await UsersTableTestHelper.cleanTable();
   });
 
   afterAll(async () => {
-    await UsersTableTestHelper.cleanTable();
-    await ThreadsTableTestHelper.cleanTable();
     await pool.end();
   });
 
@@ -150,6 +150,22 @@ describe('CommentRepositoryPostgres', () => {
   });
 
   describe('deleteCommentById function', () => {
+    it('should not NotFoundError when comment not found', async () => {
+      // Arrange
+      const addComment = new AddComment({
+        content: 'comment content',
+        thread: threadId,
+        owner: userId1,
+      });
+      const fakeIdGenerator = () => '123';
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+      await commentRepositoryPostgres.addComment(addComment);
+
+      // Action and Assert
+      await expect(
+        commentRepositoryPostgres.deleteCommentById('wrong-id'),
+      ).rejects.toThrowError(NotFoundError);
+    });
     it('should delete comment by id correctly ', async () => {
       // Arrange
       const commentId = 'comment-123';
@@ -172,7 +188,7 @@ describe('CommentRepositoryPostgres', () => {
   });
 
   describe('getCommentsThread function', () => {
-    it('should ', async () => {
+    it('should return detail comment by threadId correctly ', async () => {
       // Arrange
       await CommentsTableTestHelper.addComment({
         id: 'comment-123',
@@ -194,7 +210,7 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       // Action
-      const comments = await commentRepositoryPostgres.getCommentsThread('thread-123');
+      const comments = await commentRepositoryPostgres.getCommentsThread(threadId);
 
       // Assert
       expect(comments).toStrictEqual([
@@ -210,6 +226,7 @@ describe('CommentRepositoryPostgres', () => {
           username: username2,
           date: secondComment.created_at,
           content: secondComment.content,
+          is_delete: secondComment.is_delete,
         }),
       ]);
     });

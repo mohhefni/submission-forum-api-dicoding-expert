@@ -31,23 +31,37 @@ describe('A CommentDetail entities', () => {
     );
   });
 
-  it('should throw error when payload contain wrong data type', () => {
+  it('should create CommentDetail object correctly', () => {
     // Arrange
-    const payload = {
+    const payloadFirstComment = {
       id: 'comment-123',
       username: 'user-123',
       date: new Date(),
       content: 'sebuah comment',
       is_delete: true,
     };
+    const payloadSecondComment = {
+      id: 'comment-456',
+      username: 'user-123',
+      date: new Date(),
+      content: 'sebuah comment',
+      is_delete: false,
+    };
 
     // Action
-    const { id, username, date, content } = new CommentDetail(payload);
+    const firstComment = new CommentDetail(payloadFirstComment);
+    const secondComment = new CommentDetail(payloadSecondComment);
 
     //  Assert
-    expect(id).toEqual(payload.id);
-    expect(username).toEqual(payload.username);
-    expect(date).toEqual(payload.date);
-    expect(content).toEqual('**komentar telah dihapus**');
+    // First Comment
+    expect(firstComment.id).toEqual(payloadFirstComment.id);
+    expect(firstComment.username).toEqual(payloadFirstComment.username);
+    expect(firstComment.date).toEqual(payloadFirstComment.date);
+    expect(firstComment.content).toEqual('**komentar telah dihapus**');
+    // Second Comment
+    expect(secondComment.id).toEqual(payloadSecondComment.id);
+    expect(secondComment.username).toEqual(payloadSecondComment.username);
+    expect(secondComment.date).toEqual(payloadSecondComment.date);
+    expect(secondComment.content).toEqual(payloadSecondComment.content);
   });
 });

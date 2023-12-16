@@ -11,6 +11,7 @@ describe('add comments endpoint', () => {
   const threadId = 'thread-123';
   const commentId = 'comment-123';
   beforeAll(async () => {
+    await UsersTableTestHelper.cleanTable();
     await UsersTableTestHelper.addUser({ id: userId });
   });
 

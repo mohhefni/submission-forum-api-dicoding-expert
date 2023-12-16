@@ -1,4 +1,5 @@
 const ThreadDetail = require('../ThreadDetail');
+
 describe('A ThreadDetail entities', () => {
   it('should throw error when payload did not contain right property', () => {
     // Arrange
@@ -7,7 +8,6 @@ describe('A ThreadDetail entities', () => {
       title: 'sebuah thread',
       body: 'sebuah body thread',
       username: 'dicoding',
-      replies: [],
     };
 
     // Action and Assert
@@ -23,8 +23,7 @@ describe('A ThreadDetail entities', () => {
       title: 'sebuah thread',
       body: 'sebuah body thread',
       date: new Date(),
-      username: 'username',
-      comments: true,
+      username: true,
     };
 
     // Action and Assert
@@ -33,7 +32,7 @@ describe('A ThreadDetail entities', () => {
     );
   });
 
-  it('should throw error when payload contain wrong data type', () => {
+  it('should create ThreadDetail object correctly', () => {
     // Arrange
     const payload = {
       id: 'thread-123',
@@ -41,11 +40,12 @@ describe('A ThreadDetail entities', () => {
       body: 'sebuah body thread',
       date: new Date(),
       username: 'username',
-      comments: [],
     };
 
     // Action
-    const { id, title, body, date, username, comments } = new ThreadDetail(payload);
+    const {
+      id, title, body, date, username,
+    } = new ThreadDetail(payload);
 
     //  Assert
     expect(id).toEqual(payload.id);
@@ -53,6 +53,5 @@ describe('A ThreadDetail entities', () => {
     expect(body).toEqual(payload.body);
     expect(date).toEqual(payload.date);
     expect(username).toEqual(payload.username);
-    expect(comments).toEqual(payload.comments);
   });
 });

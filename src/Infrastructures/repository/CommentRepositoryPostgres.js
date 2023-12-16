@@ -1,7 +1,9 @@
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 const AddedComment = require('../../Domains/comments/entities/AddedComment');
+const CommentDetail = require('../../Domains/comments/entities/CommentDetail');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
+
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
     super();
@@ -51,17 +53,14 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async getCommentsThread(threadId) {
     const query = {
-      text: 'SELECT comments.id AS id, users.username AS username, comments.created_at AS date, comments.content AS content, comments.is_delete as is_delete FROM comments JOIN users ON comments.owner = users.id WHERE comments.id = $1',
+      text: 'SELECT comments.id AS id, users.username AS username, comments.created_at AS date, comments.content AS content, comments.is_delete as is_delete FROM comments JOIN users ON comments.owner = users.id WHERE comments.thread = $1 ORDER BY comments.created_at ASC',
       values: [threadId],
     };
 
-    const { rowCount, rows } = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (rowCount) {
-      return [];
-    }
-
-    return this.GroupRepliesByComments(rows);
+    const comments = rows.map((comment) => new CommentDetail(comment));
+    return comments;
   }
 
   async deleteCommentById(commentId) {
@@ -70,9 +69,9 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [commentId],
     };
 
-    const result = await this._pool.query(query);
+    const { rowCount } = await this._pool.query(query);
 
-    if (!result.rowCount) {
+    if (!rowCount) {
       throw new NotFoundError('Gagal menghapus comment');
     }
   }

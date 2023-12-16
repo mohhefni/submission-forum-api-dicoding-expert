@@ -9,7 +9,7 @@ describe('AddCommentUseCase', () => {
    * Menguji apakah use case mampu mengoskestrasikan langkah demi langkah dengan benar.
    */
   it('should orchestrating the add thread action correctly', async () => {
-    useCasePayload = {
+    const useCasePayload = {
       content: 'comment content',
       thread: 'thread-123',
       owner: 'user-123',
@@ -43,6 +43,8 @@ describe('AddCommentUseCase', () => {
     const addedComment = await addCommentUseCase.execute(useCasePayload);
 
     // Assert
+    expect(mockThreadRepository.verifyThreadIsExist).toBeCalledWith(useCasePayload.thread);
+    expect(mockCommentRepository.addComment).toBeCalledWith(new AddComment(useCasePayload));
     expect(addedComment).toStrictEqual(
       new AddedComment({
         id: 'comment-123',
@@ -50,7 +52,5 @@ describe('AddCommentUseCase', () => {
         owner: useCasePayload.owner,
       }),
     );
-    expect(mockThreadRepository.verifyThreadIsExist).toBeCalledWith(useCasePayload.thread);
-    expect(mockCommentRepository.addComment).toBeCalledWith(new AddComment(useCasePayload));
   });
 });

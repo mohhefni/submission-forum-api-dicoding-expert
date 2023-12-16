@@ -3,23 +3,27 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
 const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const ThreadDetail = require('../../../Domains/threads/entities/ThreadDetail');
-const pool = require('../../../Infrastructures/database/postgres/pool');
+const pool = require('../../database/postgres/pool');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 
 describe('ThreadRepositoryPostgres', () => {
   const userId = 'user-123';
-  const username = 'hefni';
-  beforeAll(async () => {
-    await UsersTableTestHelper.addUser({ id: userId, username: username });
+  const userName = 'hefni';
+  // beforeAll(async () => {
+  //   await UsersTableTestHelper.addUser({ id: userId, username: userName });
+  // });
+
+  beforeEach(async () => {
+    await UsersTableTestHelper.addUser({ id: userId, username: userName });
   });
 
   afterEach(async () => {
     await ThreadsTableTestHelper.cleanTable();
+    await UsersTableTestHelper.cleanTable();
   });
 
   afterAll(async () => {
-    await UsersTableTestHelper.cleanTable();
     await pool.end();
   });
 
@@ -100,6 +104,23 @@ describe('ThreadRepositoryPostgres', () => {
     });
 
     describe('getThreadById funnction', () => {
+      it('should not NotFoundError when thread not found', async () => {
+        // Arrange
+        const addThread = new AddThread({
+          title: 'thread title',
+          body: 'thread body',
+          owner: 'user-123',
+        });
+
+        const fakeIdGenerator = () => '123';
+        const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+        await threadRepositoryPostgres.addThread(addThread);
+
+        // Action and Assert
+        await expect(
+          threadRepositoryPostgres.getThreadById('wrong-id'),
+        ).rejects.toThrowError(NotFoundError);
+      });
       it('should return detail thread correctly', async () => {
         // Arrange
         const addThread = new AddThread({
@@ -123,8 +144,7 @@ describe('ThreadRepositoryPostgres', () => {
             title: findThread.title,
             body: findThread.body,
             date: findThread.created_at,
-            username: username,
-            comments: [],
+            username: userName,
           }),
         );
       });

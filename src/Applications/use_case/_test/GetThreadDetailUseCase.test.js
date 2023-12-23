@@ -16,14 +16,14 @@ describe('GetThreadDetailUseCase', () => {
       new CommentDetail({
         id: 'comment-123',
         username: 'dicoding',
-        date: new Date(),
+        date: new Date('2023-12-23T22:27:36.010Z'),
         content: 'sebuah konten comment',
         is_delete: true,
       }),
       new CommentDetail({
         id: 'comment-456',
         username: 'dicoding',
-        date: new Date(),
+        date: new Date('2023-12-23T22:28:26.853Z'),
         content: 'sebuah konten comment',
         is_delete: false,
       }),
@@ -32,7 +32,7 @@ describe('GetThreadDetailUseCase', () => {
       id: 'thread-123',
       title: 'sebuah thread',
       body: 'body sebuah thread',
-      date: new Date(),
+      date: new Date('2023-12-23T22:23:30.299Z'),
       username: 'dicoding',
     });
 
@@ -44,10 +44,35 @@ describe('GetThreadDetailUseCase', () => {
     mockThreadRepository.verifyThreadIsExist = jest.fn(() => Promise.resolve());
     mockThreadRepository.getThreadById = jest
       .fn()
-      .mockImplementation(() => Promise.resolve(mockDetailThread));
+      .mockImplementation(() => Promise.resolve(
+        new ThreadDetail({
+          id: 'thread-123',
+          title: 'sebuah thread',
+          body: 'body sebuah thread',
+          date: new Date('2023-12-23T22:23:30.299Z'),
+          username: 'dicoding',
+        }),
+      ));
     mockCommentRepository.getCommentsThread = jest
       .fn()
-      .mockImplementation(() => Promise.resolve(mockCommentThread));
+      .mockImplementation(() => Promise.resolve(
+        [
+          new CommentDetail({
+            id: 'comment-123',
+            username: 'dicoding',
+            date: new Date('2023-12-23T22:27:36.010Z'),
+            content: 'sebuah konten comment',
+            is_delete: true,
+          }),
+          new CommentDetail({
+            id: 'comment-456',
+            username: 'dicoding',
+            date: new Date('2023-12-23T22:28:26.853Z'),
+            content: 'sebuah konten comment',
+            is_delete: false,
+          }),
+        ],
+      ));
 
     /** creating use case instance */
     const getThreadUseCase = new GetThreadDetailUseCase({

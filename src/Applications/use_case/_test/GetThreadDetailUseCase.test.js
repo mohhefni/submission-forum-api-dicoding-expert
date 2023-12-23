@@ -11,7 +11,6 @@ describe('GetThreadDetailUseCase', () => {
   it('should orchestrating the add thread action correctly', async () => {
     // Arrange
     const threadId = 'thread-123';
-    const dateThread = new Date();
 
     const mockCommentThread = [
       new CommentDetail({

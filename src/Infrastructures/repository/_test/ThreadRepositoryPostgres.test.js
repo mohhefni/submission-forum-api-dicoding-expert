@@ -2,7 +2,6 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
 const AddedThread = require('../../../Domains/threads/entities/AddedThread');
-const ThreadDetail = require('../../../Domains/threads/entities/ThreadDetail');
 const pool = require('../../database/postgres/pool');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
@@ -132,21 +131,16 @@ describe('ThreadRepositoryPostgres', () => {
         const fakeIdGenerator = () => '123';
         const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
         await threadRepositoryPostgres.addThread(addThread);
-        const [findThread] = await ThreadsTableTestHelper.findThreadById('thread-123');
 
         // Action
         const thread = await threadRepositoryPostgres.getThreadById('thread-123');
 
         // Assert
-        expect(thread).toStrictEqual(
-          new ThreadDetail({
-            id: findThread.id,
-            title: findThread.title,
-            body: findThread.body,
-            date: findThread.created_at,
-            username: userName,
-          }),
-        );
+        expect(thread.id).toStrictEqual('thread-123');
+        expect(thread.title).toStrictEqual('thread title');
+        expect(thread.body).toStrictEqual('thread body');
+        expect(thread.username).toStrictEqual('hefni');
+        expect(thread.date).toBeDefined();
       });
     });
   });

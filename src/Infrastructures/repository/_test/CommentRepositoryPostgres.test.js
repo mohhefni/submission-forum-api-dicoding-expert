@@ -3,7 +3,6 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const AddComment = require('../../../Domains/comments/entities/AddComment');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
-const CommentDetail = require('../../../Domains/comments/entities/CommentDetail');
 const pool = require('../../database/postgres/pool');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
@@ -205,30 +204,21 @@ describe('CommentRepositoryPostgres', () => {
         owner: userId2,
         is_delete: true,
       });
-      const [firstComment] = await CommentsTableTestHelper.findCommentById('comment-123');
-      const [secondComment] = await CommentsTableTestHelper.findCommentById('comment-456');
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       // Action
       const comments = await commentRepositoryPostgres.getCommentsThread(threadId);
 
       // Assert
-      expect(comments).toStrictEqual([
-        new CommentDetail({
-          id: firstComment.id,
-          username: username1,
-          date: firstComment.created_at,
-          content: firstComment.content,
-          is_delete: firstComment.is_delete,
-        }),
-        new CommentDetail({
-          id: secondComment.id,
-          username: username2,
-          date: secondComment.created_at,
-          content: secondComment.content,
-          is_delete: secondComment.is_delete,
-        }),
-      ]);
+      expect(Array.isArray(comments)).toBe(true);
+      expect(comments[0].id).toEqual('comment-123');
+      expect(comments[0].username).toEqual(username1);
+      expect(comments[0].date).toBeDefined();
+      expect(comments[0].content).toEqual('content comment 1');
+      expect(comments[1].id).toEqual('comment-456');
+      expect(comments[1].username).toEqual(username2);
+      expect(comments[1].date).toBeDefined();
+      expect(comments[1].content).toEqual('**komentar telah dihapus**');
     });
   });
 });

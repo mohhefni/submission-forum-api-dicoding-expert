@@ -3,11 +3,11 @@ name: Continuous Integration
 on: 
   pull_request:
     branches:
-      - master
+      - main
  
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: Ubuntu 22.04 (Jammy)
  
     strategy:
       matrix:

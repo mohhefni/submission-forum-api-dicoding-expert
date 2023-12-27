@@ -7,7 +7,7 @@ on:
  
 jobs:
   test:
-    runs-on: Ubuntu 22.04 (Jammy)
+    runs-on: ubuntu-latest
  
     strategy:
       matrix:
